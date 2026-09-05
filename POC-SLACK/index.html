@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>POC SLACK - Teste Envio de Notificação</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        input, textarea, button {
+            width: 100%;
+            margin: 6px 0 14px;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            cursor: pointer;
+        }
+        #status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h3>POC Slack</h3>
+
+<label>Bot Token:</label>
+<input type="password" id="token" placeholder="xoxb-...">
+
+<label>ID do Canal:</label>
+<input type="text" id="channel" value="C0BV8BMQ8RG">
+
+<label>Mensagem:</label>
+<textarea id="message" rows="3">Teste de envio :rocket:</textarea>
+
+<button onclick="enviarSlack()">Enviar</button>
+
+<p id="status"></p>
+
+<script>
+    async function enviarSlack() {
+        const token = document.getElementById("token").value.trim();
+        const channel = document.getElementById("channel").value.trim();
+        const text = document.getElementById("message").value.trim();
+        const status = document.getElementById("status");
+
+        if (!token || !channel || !text) {
+            status.style.color = "red";
+            status.innerText = "Preencha todos os campos.";
+            return;
+        }
+
+        status.innerText = "Enviando...";
+        status.style.color = "black";
+
+        try {
+            const res = await fetch("https://slack.com/api/chat.postMessage", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ channel, text })
+            });
+
+            const data = await res.json();
+
+            if (data.ok) {
+                status.style.color = "green";
+                status.innerText = "Enviado com sucesso!";
+            } else {
+                status.style.color = "red";
+                status.innerText = "Erro: " + data.error;
+            }
+        } catch (err) {
+            status.style.color = "red";
+            status.innerText = "Erro na requisição (CORS ou rede): " + err.message;
+        }
+    }
+</script>
+</body>
+</html>
