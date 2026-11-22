@@ -7,35 +7,21 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 @Service
 public class EmailService {
 
-    private Properties carregarConfiguracoes() {
-        Properties configuracoes = new Properties();
+    @Value("${email.remetente}")
+    private String emailRemetente;
 
-        try (InputStream arquivo = getClass().getClassLoader().getResourceAsStream("application.properties")) {
-            if (arquivo == null) {
-                throw new RuntimeException("Arquivo application.properties não encontrado.");
-            }
-            configuracoes.load(arquivo);
-            return configuracoes;
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao carregar as configurações.", e);
-        }
-    }
+    @Value("${email.senha}")
+    private String senhaApp;
 
     public void enviarEmail(String emailDestinatario, String assunto, String conteudo) {
-        Properties configuracoes = carregarConfiguracoes();
-
-        String emailRemetente = configuracoes.getProperty("email.remetente");
-        String senhaApp = configuracoes.getProperty("email.senha");
-
         Properties propriedades = new Properties();
         propriedades.put("mail.smtp.host", "smtp.gmail.com");
         propriedades.put("mail.smtp.port", "587");
@@ -60,8 +46,7 @@ public class EmailService {
             System.out.println("E-mail enviado com sucesso!");
 
         } catch (Exception e) {
-            System.out.println("Erro ao enviar e-mail.");
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao enviar e-mail.", e);
         }
     }
 }
