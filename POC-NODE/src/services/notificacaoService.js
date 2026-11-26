@@ -4,10 +4,14 @@ function postar(caminho, corpo) {
         return Promise.resolve();
     }
 
+    const baseUrl = process.env.EMAIL_API_URL.replace(/\/+$/, "");
+    const rota = caminho.startsWith("/") ? caminho : `/${caminho}`;
+
     return fetch(`${process.env.EMAIL_API_URL}${caminho}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(corpo),
+        signal: AbortSignal.timeout(5000),
     })
         .then(function (resposta) {
             if (!resposta.ok) {

@@ -20,6 +20,11 @@ public class EmailController {
     public record CadastroRequest(String nome, String email) {}
     public record EventoRequest(String nome, String email, String evento, String area, String data) {}
 
+    private String seguro(String valor) {
+        return HtmlUtils.htmlEscape(valor == null ? "" : valor);
+    }
+
+
     @PostMapping("/cadastro")
     public ResponseEntity<String> cadastro(@RequestBody CadastroRequest req) {
         if (req.email() == null || req.email().isBlank()) {

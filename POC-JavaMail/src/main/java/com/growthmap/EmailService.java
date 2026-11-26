@@ -22,6 +22,9 @@ public class EmailService {
     private String senhaApp;
 
     public void enviarEmail(String emailDestinatario, String assunto, String conteudo) {
+        if (emailRemetente == null || emailRemetente.isBlank() || senhaApp == null || senhaApp.isBlank()) {
+            throw new IllegalStateException("Configure EMAIL_REMETENTE e EMAIL_SENHA antes de enviar e-mails.");
+        }
         Properties propriedades = new Properties();
         propriedades.put("mail.smtp.host", "smtp.gmail.com");
         propriedades.put("mail.smtp.port", "587");
